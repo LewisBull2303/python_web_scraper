@@ -6,13 +6,29 @@ def main():
     response = requests.get(url)
 
     soup = BeautifulSoup(response.content, "html.parser")
-    elements = soup.find_all(class_="comment")
+    elements = soup.find_all(class_="ind", indent=0)
+    comments = [e.find_next(class_="comment") for e in elements]
 
-    print(f"Elements: {len(elements)}")
+    keywords = {
+        "python": 0, 
+        "javascript": 0, 
+        "html": 0, 
+        "ruby": 0, 
+        "c#'": 0, 
+        ".net'": 0,
+        "css": 0,
+        }
 
-    print(f"Scraping... {url}")
-    print(response)
-    print(response.content)
+    for comment in comments:
+        comment_text = comment.get_text().lower()
+        words = comment_text.split(" ")
+        words = {w.strip(".,/:;!@") for w in words}
+
+        for k in keywords:
+            if k in words:
+                keywords[k] += 1
+
+    print(keywords)
 
 
 if __name__ == "__main__":
